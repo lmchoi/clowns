@@ -1,31 +1,29 @@
 (ns clowns.routes.oauth
   (:require
     [ring.util.http-response :refer [ok found]]
-    [clojure.java.io :as io]
-    [clowns.oauth :as oauth]
-    [clojure.tools.logging :as log]))
+    [ring.util.response :refer [response]]
+    [clowns.oauth :as oauth]))
 
 (defn oauth-init
-  "Initiates the Twitter OAuth"
   [request]
   (-> (oauth/fetch-request-token request)
-      :oauth_token
-      oauth/auth-redirect-uri
       found))
 
 (defn oauth-callback
-  "Handles the callback from Twitter."
-  [{:keys [session params]}]
-  ; oauth request was denied by user
-  (if (:denied params)
-    (-> (found "/")
-        (assoc :flash {:denied true}))
-    ; fetch the request token and do anything else you wanna do if not denied.
-    (let [{:keys [user_id screen_name]} (oauth/fetch-access-token params)]
-      (log/info "successfully authenticated as" user_id screen_name)
-      (-> (found "/")
-          (assoc :session
-            (assoc session :user-id user_id :screen-name screen_name))))))
+  [request]
+  (println request)
+  (response {:results "OK!"}))
+
+(defn set-access-token! [access-token {session :session}]
+  (-> (response {:results "OK!"})
+      (assoc :session (assoc session :access-token access-token))))
+
+(defn enter-verifier [{{{:keys [code]} :body} :parameters :as request}]
+  (set-access-token! (oauth/fetch-access-token code) request))
+
+(defn request-resource [{session :session}]
+  ; TODO convert string to edn
+  (response {:results (oauth/request-resource (:access-token session) "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/teams/matchups;weeks=1?format=json")}))
 
 (defn oauth-routes []
   ["/oauth"

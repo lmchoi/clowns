@@ -6,6 +6,7 @@
   :dependencies [[ch.qos.logback/logback-classic "1.2.5"]
                  [clj-oauth "1.5.5"]
                  [clojure.java-time "0.3.3"]
+                 [com.github.scribejava/scribejava-apis "8.3.1"]
                  [com.walmartlabs/lacinia "0.32.0"]
                  [conman "0.9.1"]
                  [cprop "0.1.19"]
