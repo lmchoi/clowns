@@ -10,14 +10,15 @@
     [clowns.routes.services.graphql :as graphql]
     [clowns.middleware.formats :as formats]
     [clowns.routes.oauth :as oauth]
+    [clowns.research.handler :as research]
     [ring.util.http-response :refer :all]
     [clojure.java.io :as io]))
 
 (defn service-routes []
   ["/api"
-   {:coercion spec-coercion/coercion
-    :muuntaja formats/instance
-    :swagger {:id ::api}
+   {:coercion   spec-coercion/coercion
+    :muuntaja   formats/instance
+    :swagger    {:id ::api}
     :middleware [;; query-params & form-params
                  parameters/parameters-middleware
                  ;; content-negotiation
@@ -36,8 +37,8 @@
                  multipart/multipart-middleware]}
 
    ;; swagger documentation
-   ["" {:no-doc true
-        :swagger {:info {:title "my-api"
+   ["" {:no-doc  true
+        :swagger {:info {:title       "my-api"
                          :description "https://cljdoc.org/d/metosin/reitit"}}}
 
     ["/swagger.json"
@@ -45,27 +46,26 @@
 
     ["/api-docs/*"
      {:get (swagger-ui/create-swagger-ui-handler
-             {:url "/api/swagger.json"
+             {:url    "/api/swagger.json"
               :config {:validator-url nil}})}]]
 
    ["/ping"
     {:get (constantly (ok {:message "pong"}))}]
-   
+
    ["/graphql" {:no-doc true
-                :post (fn [req] (ok (graphql/execute-request (-> req :body slurp))))}]
+                :post   (fn [req] (ok (graphql/execute-request (-> req :body slurp))))}]
 
    ["/oauth"
     {:swagger {:tags ["oauth"]}}
 
     ["/oauth-oob"
-     {:post {:summary "enter oob"
+     {:post {:summary    "enter oob"
              :parameters {:body {:code string?}}
-             :responses {200 {:body {:results string?}}}
-             :handler oauth/enter-verifier}}]
+             :responses  {200 {:body {:results string?}}}
+             :handler    oauth/enter-verifier}}]]
 
-    ["/request-resource"
-     {:post {:summary "request resource"
-
-             ;:parameters {:body {:code string?}}
-             ;:responses {200 {:body {:results string?}}}
-             :handler oauth/request-resource}}]]])
+   ["/matchup"
+    {:get {:summary "get matchup"
+           ;:parameters {:body {:code string?}}
+           ;:responses {200 {:body {:results string?}}}
+           :handler research/get-matchup}}]])

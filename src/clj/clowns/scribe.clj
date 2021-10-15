@@ -25,7 +25,6 @@
     (let [request (OAuthRequest. (Verb/GET) url)]
       (.signRequest service access-token request)
       (let [scribe-response (.execute service request)]
-        (println (.getCode scribe-response))
         (.getBody scribe-response)))
     ; TODO else redirect to log in? refresh token?
     ))
