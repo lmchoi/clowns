@@ -1,6 +1,11 @@
 (ns clowns.projections.core
   (:require [clojure.data.csv :as csv]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [mount.core :refer [args defstate]]))
+
+(declare projections)
+(declare get-projections)
+(defstate projections :start (get-projections))
 
 (defn- string->number [s]
   (let [n (read-string s)]
