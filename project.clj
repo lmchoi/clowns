@@ -24,6 +24,7 @@
                  [mount "0.1.16"]
                  [nrepl "0.8.3"]
                  [org.clojure/clojure "1.10.3"]
+                 [org.clojure/data.csv "1.0.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/tools.cli "1.0.206"]
                  [org.clojure/tools.logging "1.1.0"]
